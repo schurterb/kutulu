@@ -19,17 +19,24 @@ class ExchangeAPIWrapper(metclass=abc.ABCMeta):
         pass  
     
     """
+    Returns the current time on the Exchange Server
+    """
+    @abc.abstractmethod
+    def getExchangeServerTime(self):
+        pass
+    
+    """
     Returns the current account balance of the user
     """
     @abc.abstractmethod
-    def pollAccountBalance(self):
+    def getAccountBalance(self):
         pass
     
     """
     Returns exchange data about the given asset pairs
     """
     @abc.abstractmethod
-    def pollAssetInfo(self, asset_list):
+    def getAssetInfo(self, asset_list):
         pass
     
     """
@@ -37,13 +44,6 @@ class ExchangeAPIWrapper(metclass=abc.ABCMeta):
     """
     @abc.abstractmethod
     def pollAssetPrices(self, asset_list):
-        pass
-    
-    """
-    Returns a combination of asset price and pair data
-    """
-    @abc.abstractmethod
-    def pollTickers(self, asset_list):
         pass
     
     """
@@ -88,3 +88,5 @@ class ExchangeAPIWrapper(metclass=abc.ABCMeta):
     @abc.abstractmethod
     def getRecentTrades(self, asset_pairs):
         pass
+    
+    

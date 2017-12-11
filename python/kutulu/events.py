@@ -10,11 +10,11 @@ import random
 
 class AssetInfo:
     
-    def __init__(self, asset, volume, open_orders, **kwargs):
+    def __init__(self, asset, volume, **kwargs):
         self.asset = asset
         self.volume = volume
-        self.open_orders = open_orders
-        #TODO: difine all necessary asset info fields, if any more
+        #This is the volume held for various orders and withdraws.
+        self.held = float(kwargs.get("held_volume", 0.0))
 
 
 class TickerInfo: 
@@ -23,6 +23,9 @@ class TickerInfo:
         self.exchange = exchange
         self.base = base
         self.quote = quote
+        self.min_order_size = float(kwargs.get("min_order_size", 0.01))
+        self.max_order_size = float(kwargs.get("max_order_size", 1000.00))
+        self.order_precision = float(kwargs.get("order_precision", 2))
         #TODO: define all necessary ticker info fields
 
         
@@ -34,7 +37,6 @@ class TickerData:
         self.quote = quote
         self.ask = ask
         self.bid = bid
-        #TODO: consider exchange APIs for other ticker data fields
       
       
 """
@@ -53,11 +55,13 @@ class TickerHistory:
 
 class OrderBook:
     
-    def __init__(self, exchange, base, quote, **kwargs):
+    def __init__(self, exchange, base, quote, bids, asks, time, **kwargs):
         self.exchange = exchange
         self.base = base
         self.quote = quote
-        #TODO: define all necessary order book fields
+        self.bids = bids
+        self.asks = asks
+        self.time = time
 
 
 class Order:
@@ -69,11 +73,10 @@ class Order:
     ordertype="limit"
     price = None
     volume = 0
-    expiretime = "+300"
-    fee_in_base = False
+    expiretime = 300 #seconds = the max time the order should remain on the books
+    fee_in_base = False 
     success = False
     orderId = random.randint(0, 2147483647)
-    #TODO: define all necessary order fields
     
 
 class BuyOrder(Order):

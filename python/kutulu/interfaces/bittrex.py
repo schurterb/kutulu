@@ -2,12 +2,12 @@
 @auther schurterb
 @date 17-12-11
 @description
- Coinbase exchange API wrapper
+ Bittrex exchange API wrapper
 """
 
 from apiwrapper import ExchangeAPIWrapper
 
-class CoinbaseAPI(ExchangeAPIWrapper):
+class BittrexAPI(ExchangeAPIWrapper):
     
     def __init__(self, config, **kwargs):
         pass
