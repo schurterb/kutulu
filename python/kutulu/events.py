@@ -4,6 +4,9 @@
 @description
  Events used to generalize access to the various exchange APIs. Each API wrapper
  must handle these events and translate them for the exchanges API.
+ 
+ For system efficiency, it is recommended that each asset, asset_pair, and exchange be
+ given IDs to allow them to be efficiently with numpy arrays throughout the system.
 """
 
 import random
@@ -35,8 +38,8 @@ class TickerData:
         self.exchange = exchange
         self.base = base
         self.quote = quote
-        self.ask = ask
-        self.bid = bid
+        self.ask = float(ask)
+        self.bid = float(bid)
       
       
 """

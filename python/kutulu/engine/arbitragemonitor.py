@@ -9,10 +9,14 @@ import sys
 sys.path.append("..")
 
 import events
+import logger
 
+import numpy as np
+import traceback
 
 
 class ArbitrageMonitor:
     
     def __init__(self, **kwargs):
-        pass
+        self.log = logger.Logger("kutulu", "ArbitrageMonitor", "DEBUG")
+        
