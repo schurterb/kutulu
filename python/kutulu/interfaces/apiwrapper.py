@@ -89,4 +89,10 @@ class ExchangeAPIWrapper(metclass=abc.ABCMeta):
     def getRecentTrades(self, asset_pairs):
         pass
     
+    """
+    Submits requests to transfer crypto currencies to different exchanges
+    """
+    @abc.abstractmethod
+    def transferCurrency(self, transfer_requests):
+        pass
     

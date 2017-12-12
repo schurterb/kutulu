@@ -82,3 +82,9 @@ class CoinbaseAPI(ExchangeAPIWrapper):
     def getRecentTrades(self, asset_pairs):
         pass
     
+    """
+    Submits requests to transfer crypto currencies to different exchanges
+    """
+    def transferCurrency(self, transfer_requests):
+        pass
+    

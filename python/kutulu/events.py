@@ -104,3 +104,11 @@ class SellOrder(Order):
         self.action = "sell"
         self.feeFlag = False
             
+            
+class TransferRequest:
+    
+    def __init__(self, exchange, asset, volume, destination, **kwargs):
+        self.exchange = exchange
+        self.asset = asset
+        self.volume = volume
+        self.destination = destination
