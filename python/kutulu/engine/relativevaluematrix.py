@@ -57,9 +57,12 @@ class RelativeValueMatrix:
     
     def getAsk(self, exchange, base, quote):
         try:
-            value = self.ask_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
-            if(value > 0.0):
-                return value
+            if exchange in self.exchanges and base in self.assets and quote in self.assets:
+                value = self.ask_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
+                if(value > 0.0):
+                    return value
+            else:
+                self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options for getting a ask value")
         except Exception as e:
             self.log.error("Unable to retrieve a ask value for "+str(base)+" - "+str(quote)+" @ "+str(exchange)+".  Reason: "+str(e))
             self.log.debug(traceback.format_exc())
@@ -72,7 +75,7 @@ class RelativeValueMatrix:
                 if(value > 0.0):
                     return value
             else:
-                self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options")
+                self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options for getting a bid value")
         except Exception as e:
             self.log.error("Unable to retrieve a bid value for "+str(base)+" - "+str(quote)+" @ "+str(exchange)+".  Reason: "+str(e))
             self.log.debug(traceback.format_exc())
