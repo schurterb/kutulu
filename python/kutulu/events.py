@@ -34,12 +34,14 @@ class TickerInfo:
         
 class TickerData:
     
-    def __init__(self, exchange, base, quote, ask, bid):
+    def __init__(self, exchange, base, quote, ask, ask_volume, bid, bid_volume):
         self.exchange = exchange
         self.base = base
         self.quote = quote
         self.ask = float(ask)
         self.bid = float(bid)
+        self.ask_volume = float(ask_volume)
+        self.bid_volume = float(bid_volume)
       
       
 """
