@@ -33,6 +33,11 @@ class RelativeValueMatrix:
         self.bid_price_matrix = np.ones((len(self.exchange_list), len(self.asset_list), len(self.asset_list))) * -1
         self.bid_volume_matrix = np.ones((len(self.exchange_list), len(self.asset_list), len(self.asset_list))) * -1
         
+    def getExchangeNames(self):
+        return self.exchanges
+        
+    def getAssetNames(self):
+        return self.assets
    
     def updateRelativeValues(self, tickers):
         for ticker in tickers:
@@ -106,7 +111,7 @@ class RelativeValueMatrix:
             if exchange in self.exchanges and base in self.assets and quote in self.assets:
                 ask = self.ask_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
                 bid = self.bid_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
-                value = (ask + bid) / 2
+                value = (ask + bid) / 2git co
                 if(value > 0.0):
                     return value
             else:

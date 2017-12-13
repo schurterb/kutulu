@@ -20,3 +20,12 @@ class ArbitrageMonitor:
     def __init__(self, **kwargs):
         self.log = logger.Logger("kutulu", "ArbitrageMonitor", "DEBUG")
         
+    def checkArbitrageOpportunities(self, relative_values):
+        try:
+            opportunities = []
+            
+            
+        except Exception as e:
+            self.log.error("Failed to check for arbitrage opportunities.  Reason: "+str(e))
+            self.log.debug(traceback.format_exc())
+                
