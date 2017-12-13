@@ -23,15 +23,16 @@ for exchange in exchanges:
     good_tickers.append(TickerData(exchange, "LTC", "ETH", 42.0, 1.0/42.0))
     for base in assets:
         good_tickers.append(TickerData(exchange, base, base, 1.0, 1.0))
-bad_tickers = []
-bad_tickers.append(TickerData("nasdaq", "BTC", "LTC", 42.0, 1.0/42.0))
-bad_tickers.append(TickerData(None, "LTC", "ETH", 42.0, 1.0/42.0))
-bad_tickers.append(TickerData("kraken", "COW", "ETH", 42.0, 1.0/42.0))
-bad_tickers.append(TickerData("kraken", None, "LTC", 42.0, 1.0/42.0))
-bad_tickers.append(TickerData("kraken", "BTC", "COW", 42.0, 1.0/42.0))
-bad_tickers.append(TickerData("kraken", "LTC", None, 42.0, 1.0/42.0))
-bad_tickers.append(TickerData("kraken", "BTC", "ETH", -10, 1.0/-10))
-bad_tickers.append(TickerData("kraken", "BTC", "ETH", 0.0, 0.0))
+bad_name_tickers = []
+bad_name_tickers.append(TickerData("nasdaq", "BTC", "LTC", 42.0, 1.0/42.0))
+bad_name_tickers.append(TickerData(None, "LTC", "ETH", 42.0, 1.0/42.0))
+bad_name_tickers.append(TickerData("kraken", "COW", "ETH", 42.0, 1.0/42.0))
+bad_name_tickers.append(TickerData("kraken", None, "LTC", 42.0, 1.0/42.0))
+bad_name_tickers.append(TickerData("kraken", "BTC", "COW", 42.0, 1.0/42.0))
+bad_name_tickers.append(TickerData("kraken", "LTC", None, 42.0, 1.0/42.0))
+bad_value_tickers = []
+bad_value_tickers.append(TickerData("kraken", "BTC", "ETH", -10, 1.0/-10))
+bad_value_tickers.append(TickerData("kraken", "BTC", "ETH", 0.001, -0.05))
                 
                 
 print("Creating Matrix...")
@@ -64,7 +65,8 @@ else:
   
 
 print("Updating Matrix with bad data...")
-matrix.updateRelativeValues(bad_tickers)
+matrix.updateRelativeValues(bad_name_tickers)
+matrix.updateRelativeValues(bad_value_tickers)
 
 print("Checking Matrix updates...")
 check = True
@@ -78,11 +80,21 @@ for ticker in good_tickers:
            print(matrix.getBid(ticker.exchange, ticker.base, ticker.quote)," != ",ticker.bid)
            print(matrix.getBid(ticker.exchange, ticker.quote, ticker.base)," != ",1.0/ticker.bid)
            check = False
-for ticker in bad_tickers:
+for ticker in bad_name_tickers:
     if((matrix.getAsk(ticker.exchange, ticker.base, ticker.quote) != None) or
        (matrix.getAsk(ticker.exchange, ticker.quote, ticker.base) != None) or
        (matrix.getBid(ticker.exchange, ticker.base, ticker.quote) != None) or
        (matrix.getBid(ticker.exchange, ticker.quote, ticker.base) != None)):
+           print(matrix.getAsk(ticker.exchange, ticker.base, ticker.quote)," != ",ticker.ask)
+           print(matrix.getAsk(ticker.exchange, ticker.quote, ticker.base)," != ",1.0/ticker.ask)
+           print(matrix.getBid(ticker.exchange, ticker.base, ticker.quote)," != ",ticker.bid)
+           print(matrix.getBid(ticker.exchange, ticker.quote, ticker.base)," != ",1.0/ticker.bid)
+           check = False
+for ticker in bad_value_tickers:
+    if((matrix.getAsk(ticker.exchange, ticker.base, ticker.quote) == ticker.ask) or
+       (matrix.getAsk(ticker.exchange, ticker.quote, ticker.base) == 1.0/ticker.ask) or
+       (matrix.getBid(ticker.exchange, ticker.base, ticker.quote) == ticker.bid) or
+       (matrix.getBid(ticker.exchange, ticker.quote, ticker.base) == 1.0/ticker.bid)):
            print(matrix.getAsk(ticker.exchange, ticker.base, ticker.quote)," != ",ticker.ask)
            print(matrix.getAsk(ticker.exchange, ticker.quote, ticker.base)," != ",1.0/ticker.ask)
            print(matrix.getBid(ticker.exchange, ticker.base, ticker.quote)," != ",ticker.bid)
