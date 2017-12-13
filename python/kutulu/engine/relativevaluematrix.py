@@ -111,9 +111,10 @@ class RelativeValueMatrix:
             if exchange in self.exchanges and base in self.assets and quote in self.assets:
                 ask = self.ask_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
                 bid = self.bid_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
-                value = (ask + bid) / 2git co
-                if(value > 0.0):
-                    return value
+                if (ask > 0.0) and (bid > 0.0):
+                    value = (ask + bid) / 2
+                    if(value > 0.0):
+                        return value
             else:
                 self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options for getting a bid value")
         except Exception as e:
@@ -129,9 +130,10 @@ class RelativeValueMatrix:
             if exchange in self.exchanges and base in self.assets and quote in self.assets:
                 ask = self.ask_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
                 bid = self.bid_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
-                value = ask - bid
-                if(value >= 0.0):
-                    return value
+                if (ask > 0.0) and (bid > 0.0):
+                    value = ask - bid
+                    if(value >= 0.0):
+                        return value
             else:
                 self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options for getting a bid value")
         except Exception as e:
@@ -149,9 +151,10 @@ class RelativeValueMatrix:
                 bid = self.bid_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
                 ask_volume = self.ask_volume_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
                 bid_volume = self.bid_volume_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
-                value = ( (ask * ask_volume) + (bid * bid_volume) ) / (ask_volume + bid_volume)
-                if(value > 0.0):
-                    return value
+                if (ask > 0.0) and (bid > 0.0) and (ask_volume > 0.0) and (bid_volume > 0.0):
+                    value = ( (ask * ask_volume) + (bid * bid_volume) ) / (ask_volume + bid_volume)
+                    if(value > 0.0):
+                        return value
             else:
                 self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options for getting a bid value")
         except Exception as e:
@@ -169,9 +172,10 @@ class RelativeValueMatrix:
                 bid = self.bid_price_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
                 ask_volume = self.ask_volume_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
                 bid_volume = self.bid_volume_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
-                value = ( (ask * ask_volume) - (bid * bid_volume) ) / (ask_volume - bid_volume)
-                if(value >= 0.0):
-                    return value
+                if (ask > 0.0) and (bid > 0.0) and (ask_volume > 0.0) and (bid_volume > 0.0):
+                    value = ( (ask * ask_volume) - (bid * bid_volume) ) / (ask_volume - bid_volume)
+                    if(value >= 0.0):
+                        return value
             else:
                 self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options for getting a bid value")
         except Exception as e:
