@@ -22,12 +22,12 @@ good_tickers.append(TickerData("kraken", "BTC", "ETH", 0.03456, 0.03445))
 good_tickers.append(TickerData("kraken", "BTC", "LTC", 0.02214, 0.02108))
 good_tickers.append(TickerData("kraken", "LTC", "ETH", 1.3895, 1.1274))
 #GDAX tickers
-good_tickers.append(TickerData("gdax", "BTC", "ETH", 0.03456, 0.03445))
+good_tickers.append(TickerData("gdax", "BTC", "ETH", 0.03578, 0.03466))
 good_tickers.append(TickerData("gdax", "BTC", "LTC", 0.02214, 0.02108))
-good_tickers.append(TickerData("gdax", "LTC", "ETH", 1.3895, 1.1274))
+good_tickers.append(TickerData("gdax", "LTC", "ETH", 0.3895, 0.1274))
 #Bittrex tickers
 good_tickers.append(TickerData("bittrex", "BTC", "ETH", 0.03456, 0.03445))
-good_tickers.append(TickerData("bittrex", "BTC", "LTC", 0.02214, 0.02108))
+good_tickers.append(TickerData("bittrex", "BTC", "LTC", 0.03389, 0.025))
 good_tickers.append(TickerData("bittrex", "LTC", "ETH", 1.3895, 1.1274))
 #Self-exchange asset values (for initialization)
 for exchange in exchanges:
