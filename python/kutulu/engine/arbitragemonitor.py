@@ -19,8 +19,10 @@ class ArbitrageMonitor:
     
     def __init__(self, config, **kwargs):
         self.log = logger.Logger("kutulu", "ArbitrageMonitor", "DEBUG")
+        self.log.debug("Initializing ArbitrageMonitor")
         self.network_fee = config.get("network_fees")
         self.exchange_fee = config.get("exchange_fees")
+        self.log.debug("Finished initializing ArbitrageMonitor")
         
     """
     Returns a list of arbitrage opportunities between exchanges.
@@ -28,6 +30,7 @@ class ArbitrageMonitor:
         (<buy exchange> <sell exchange> <base asset> <quote asset>)
     """
     def checkArbitrageOpportunities(self, rvm):
+        self.log.debug("Searching for arbitrage opportunities")
         opportunities = []
         try:
             for buy_exchange in rvm.getExchangeNames():
@@ -45,5 +48,6 @@ class ArbitrageMonitor:
         except Exception as e:
             self.log.error("Failed to check for arbitrage opportunities.  Reason: "+str(e))
             self.log.debug(traceback.format_exc())
+        self.log.debug("Found "+len(opportunities)+" arbitrage opportunities")
         return opportunities
                 
