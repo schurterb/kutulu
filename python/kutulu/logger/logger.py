@@ -24,7 +24,7 @@ class Logger(object):
             logfile = group+'.log'
             self.log = logging.getLogger(name)
         else:
-            logfile = 'cuthulu.log'
+            logfile = 'kutulu.log'
             self.log = logging.getLogger()
         self.formatter = logging.Formatter(FORMAT)
         handler = RotatingFileHandler(filepath+logfile,

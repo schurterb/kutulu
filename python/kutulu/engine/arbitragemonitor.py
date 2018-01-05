@@ -40,6 +40,7 @@ class ArbitrageMonitor:
                             try:
                                 buy_price = rvm.getWeightedAverage(buy_exchange, base, quote)
                                 sell_price = rvm.getWeightedAverage(sell_exchange, base, quote)
+                                print(sell_price,self.exchange_fee[sell_exchange],buy_price,self.exchange_fee[buy_exchange])
                                 if( (sell_price * self.exchange_fee[sell_exchange]) - (buy_price * self.exchange_fee[buy_exchange]) > (self.network_fee * 2) ):
                                     opportunities.append([buy_exchange, sell_exchange, base, quote])
                             except Exception as e:
@@ -48,6 +49,6 @@ class ArbitrageMonitor:
         except Exception as e:
             self.log.error("Failed to check for arbitrage opportunities.  Reason: "+str(e))
             self.log.debug(traceback.format_exc())
-        self.log.debug("Found "+len(opportunities)+" arbitrage opportunities")
+        self.log.debug("Found "+str(len(opportunities))+" arbitrage opportunities")
         return opportunities
                 
