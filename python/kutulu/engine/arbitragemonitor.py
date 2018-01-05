@@ -20,8 +20,9 @@ class ArbitrageMonitor:
     def __init__(self, config, **kwargs):
         self.log = logger.Logger("kutulu", "ArbitrageMonitor", "DEBUG")
         self.log.debug("Initializing ArbitrageMonitor")
-        self.network_fee = config.get("network_fees")
-        self.exchange_fee = config.get("exchange_fees")
+        self.network_fee = config.get("network_fee")
+        self.exchange_fee = config.get("exchange_fee")
+        self.arbitrage_window = config.get("arbitrage_window")
         self.log.debug("Finished initializing ArbitrageMonitor")
         
     """
@@ -37,15 +38,15 @@ class ArbitrageMonitor:
                 for sell_exchange in rvm.getExchangeNames():
                     for base in rvm.getAssetNames():
                         for quote in rvm.getAssetNames():
-                            try:
-                                buy_price = rvm.getWeightedAverage(buy_exchange, base, quote)
-                                sell_price = rvm.getWeightedAverage(sell_exchange, base, quote)
-                                print(sell_price,self.exchange_fee[sell_exchange],buy_price,self.exchange_fee[buy_exchange])
-                                if( (sell_price * self.exchange_fee[sell_exchange]) - (buy_price * self.exchange_fee[buy_exchange]) > (self.network_fee * 2) ):
-                                    opportunities.append([buy_exchange, sell_exchange, base, quote])
-                            except Exception as e:
-                                self.log.error("Error while checking arbitrage between "+str(buy_exchange)+" and "+str(sell_exchange)+".  Reason: "+str(e))
-                                self.log.debug(traceback.format_exc())
+                            if buy_exchange != sell_exchange and base != quote:
+                                try:
+                                    buy_price = rvm.getAverage(buy_exchange, base, quote)
+                                    sell_price = rvm.getAverage(sell_exchange, base, quote)
+                                    if ((sell_price - buy_price) / buy_price) > (self.exchange_fee[sell_exchange]+self.exchange_fee[buy_exchange]+self.network_fee+self.arbitrage_window):
+                                        opportunities.append([buy_exchange, sell_exchange, base, quote])
+                                except Exception as e:
+                                    self.log.error("Error while checking arbitrage between "+str(buy_exchange)+" and "+str(sell_exchange)+".  Reason: "+str(e))
+                                    self.log.debug(traceback.format_exc())
         except Exception as e:
             self.log.error("Failed to check for arbitrage opportunities.  Reason: "+str(e))
             self.log.debug(traceback.format_exc())

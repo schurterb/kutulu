@@ -35,10 +35,17 @@ for exchange in exchanges:
         good_tickers.append(TickerData(exchange, base, base, 1.0, 1.0, 1.0, 1.0))
         
 rvm = RelativeValueMatrix(exchanges, assets)
+rvm.updateRelativeValues(good_tickers)
+
+#for exchange in exchanges:
+#    for base in assets:
+#        for quote in assets:
+#            print(exchange, base, quote, rvm.getAsk(exchange, base, quote), rvm.getBid(exchange, base, quote))
 
 config = {}
 config["network_fee"] = 0.001
-config["exchange_fees"] = {"kraken":0.0026, "gdax":0.0, "bittrex":0.0025}
+config["exchange_fee"] = {"kraken":0.0026, "gdax":0.0, "bittrex":0.0025}
+config["arbitrage_window"] = 0.01
 
 print("Creating ArbitrageMonitor")
 monitor = ArbitrageMonitor(config)
@@ -49,6 +56,11 @@ else:
     
 print("Calculating Arbitrage Opportunities")
 opportunities = monitor.checkArbitrageOpportunities(rvm)
-print(opportunities)
+print("Found "+str(len(opportunities))+" opportunities for arbitrage:")
+for o in opportunities:
+    buy = rvm.getAverage(o[0],o[2],o[3])
+    sell = rvm.getAverage(o[1],o[2],o[3])
+    diff = (sell - buy)/buy
+    print(o,"buy="+str(buy),"sell="+str(sell),"diff="+str(diff))
 
                 

@@ -18,9 +18,9 @@ assets = ["BTC", "ETH", "LTC"]
 print("Initializing test")
 good_tickers = []
 for exchange in exchanges:
-    good_tickers.append(TickerData(exchange, "BTC", "ETH", 42.0, 10, 41.0, 10))
-    good_tickers.append(TickerData(exchange, "BTC", "LTC", 42.0, 10, 41.0, 10))
-    good_tickers.append(TickerData(exchange, "LTC", "ETH", 42.0, 10, 41.0, 10))
+    good_tickers.append(TickerData(exchange, "BTC", "ETH", 42.0, 10, 41.0, 20))
+    good_tickers.append(TickerData(exchange, "BTC", "LTC", 42.0, 20, 41.0, 10))
+    good_tickers.append(TickerData(exchange, "LTC", "ETH", 42.0, 5, 41.0, 5))
     for base in assets:
         good_tickers.append(TickerData(exchange, base, base, 1.0, 1.0, 1.0, 1.0))
 bad_name_tickers = []
@@ -106,35 +106,45 @@ if check:
 else:
     print("FAIL")
     
+#  "{0:0.6f}".format(usd_profit_loss[1]).ljust(13)
     
-print("Checking average values...")
+print("Checking rvm calculations")
 for exchange in exchanges:
     print("## echange = ",exchange)
+    print(" base : quote : average : spread : weighted average : weighted spread ")
     for base in assets:
         for quote in assets:
-            val = matrix.getAverage(exchange, base, quote)
-            print(base,":",quote,":",val)
-            
-print("Checking spreads...")
-for exchange in exchanges:
-    print("## echange = ",exchange)
-    for base in assets:
-        for quote in assets:
-            val = matrix.getSpread(exchange, base, quote)
-            print(base,":",quote,":",val)
-            
-print("Checking weighted average values...")
-for exchange in exchanges:
-    print("## echange = ",exchange)
-    for base in assets:
-        for quote in assets:
-            val = matrix.getWeightedAverage(exchange, base, quote)
-            print(base,":",quote,":",val)
-            
-print("Checking weighted spreads...")
-for exchange in exchanges:
-    print("## echange = ",exchange)
-    for base in assets:
-        for quote in assets:
-            val = matrix.getSpread(exchange, base, quote)
-            print(base,":",quote,":",val)
+            avg = matrix.getAverage(exchange, base, quote)
+            spd = matrix.getSpread(exchange, base, quote)
+            w_avg = matrix.getWeightedAverage(exchange, base, quote)
+            w_spd = matrix.getWeightedSpread(exchange, base, quote)
+            msg = " "+"{0:0.4f}".format(base).ljust(4)+" : "+"{0:0.4f}".format(quote).ljust(4)+"  : " \
+                  +"{0:0.4f}".format(avg).ljust(7)+" : " \
+                  +"{0:0.4f}".format(spd).ljust(6)+" : " \
+                  +"{0:0.4f}".format(w_avg).ljust(16)+" : " \
+                  +"{0:0.4f}".format(w_spd).ljust(15)
+            print(msg)
+#            
+#print("Checking spreads...")
+#for exchange in exchanges:
+#    print("## echange = ",exchange)
+#    for base in assets:
+#        for quote in assets:
+#            val = matrix.getSpread(exchange, base, quote)
+#            print(base,":",quote,":",val)
+#            
+#print("Checking weighted average values...")
+#for exchange in exchanges:
+#    print("## echange = ",exchange)
+#    for base in assets:
+#        for quote in assets:
+#            val = matrix.getWeightedAverage(exchange, base, quote)
+#            print(base,":",quote,":",val)
+#            
+#print("Checking weighted spreads...")
+#for exchange in exchanges:
+#    print("## echange = ",exchange)
+#    for base in assets:
+#        for quote in assets:
+#            val = matrix.getSpread(exchange, base, quote)
+#            print(base,":",quote,":",val)
