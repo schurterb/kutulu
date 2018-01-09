@@ -118,11 +118,15 @@ for exchange in exchanges:
             spd = matrix.getSpread(exchange, base, quote)
             w_avg = matrix.getWeightedAverage(exchange, base, quote)
             w_spd = matrix.getWeightedSpread(exchange, base, quote)
-            msg = " "+"{0:0.4f}".format(base).ljust(4)+" : "+"{0:0.4f}".format(quote).ljust(4)+"  : " \
-                  +"{0:0.4f}".format(avg).ljust(7)+" : " \
-                  +"{0:0.4f}".format(spd).ljust(6)+" : " \
-                  +"{0:0.4f}".format(w_avg).ljust(16)+" : " \
-                  +"{0:0.4f}".format(w_spd).ljust(15)
+            if avg is not None:
+                avg = "{0:0.4f}".format(float(avg)).ljust(7)
+            if spd is not None:
+                spd = "{0:0.4f}".format(float(spd)).ljust(6)
+            if w_avg is not None:
+                w_avg = "{0:0.4f}".format(float(w_avg)).ljust(16)
+            if w_spd is not None:
+                w_spd = "{0:0.4f}".format(float(w_spd)).ljust(15)
+            msg = " "+str(base)+" : "+str(quote)+"  : "+str(avg)+" : "+str(spd)+" : "+str(w_avg)+" : "+str(w_spd)
             print(msg)
 #            
 #print("Checking spreads...")

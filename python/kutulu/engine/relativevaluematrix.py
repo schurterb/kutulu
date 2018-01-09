@@ -138,7 +138,7 @@ class RelativeValueMatrix:
                     if(value >= 0.0):
                         return value
             else:
-                self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options for getting a value spread")
+                self.log.warn(str(exchange)+" "+str(base)+" "+str(quote)+" are not a valid set of options for getting a value spread")
         except Exception as e:
             self.log.error("Unable to retrieve a spread value for "+str(base)+" - "+str(quote)+" @ "+str(exchange)+".  Reason: "+str(e))
             self.log.debug(traceback.format_exc())
@@ -159,7 +159,7 @@ class RelativeValueMatrix:
                     if(value > 0.0):
                         return value
             else:
-                self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options for getting a weighted average value")
+                self.log.warn(str(exchange)+" "+str(base)+" "+str(quote)+" are not a valid set of options for getting a weighted average value")
         except Exception as e:
             self.log.error("Unable to retrieve an average value for "+str(base)+" - "+str(quote)+" @ "+str(exchange)+".  Reason: "+str(e))
             self.log.debug(traceback.format_exc())
@@ -176,11 +176,16 @@ class RelativeValueMatrix:
                 ask_volume = self.ask_volume_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
                 bid_volume = self.bid_volume_matrix[ self.exchange_list[exchange] ][ self.asset_list[base] ][ self.asset_list[quote] ]
                 if (ask > 0.0) and (bid > 0.0) and (ask_volume > 0.0) and (bid_volume > 0.0):
-                    value = ( (ask * ask_volume) - (bid * bid_volume) ) / (ask_volume - bid_volume)
-                    if(value >= 0.0):
-                        return value
+                    if (ask_volume > bid_volume) and ((ask * ask_volume) > (bid * bid_volume)):
+                        value = ( (ask * ask_volume) - (bid * bid_volume) ) / (ask_volume - bid_volume)
+                        if(value >= 0.0):
+                            return value
+                    elif (ask_volume > bid_volume):
+                        return 0.0
+                    else:
+                        return self.getSpread(exchange, base, quote)
             else:
-                self.log.warn(exchange+" "+base+" "+quote+" are not a valid set of options for getting a weighted value spread")
+                self.log.warn(str(exchange)+" "+str(base)+" "+str(quote)+" are not a valid set of options for getting a weighted value spread")
         except Exception as e:
             self.log.error("Unable to retrieve a spread value for "+str(base)+" - "+str(quote)+" @ "+str(exchange)+".  Reason: "+str(e))
             self.log.debug(traceback.format_exc())
