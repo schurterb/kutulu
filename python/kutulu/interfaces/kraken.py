@@ -5,45 +5,169 @@
  Kraken exchange API wrapper
 """
 
+import sys
+sys.path.append("..")
+
 from apiwrapper import ExchangeAPIWrapper
+from logger import Logger
+from events import *
+
+import krakenex
+import traceback
+import time
 
 class KrakenAPI(ExchangeAPIWrapper):
     
-    def __init__(self, config, **kwargs):
-        pass
+    def __init__(self, keys, spread_percentages, **kwargs):
+        self.log = Logger("interface","KrakenAPI","DEBUG")
+        self.testmode = kwargs.get("testmode",False)
+        self.spread_percentage = spread_percentages
+        self.api_key = keys['api_key']
+        self.private_key = keys['private_key']
+        self.conn = None
+        self.interface = None
+        self.__connect()
+        self.ignore_list = kwargs.get('ignore_list', [])
+        self.exchange_name = kwargs.get('exchange_name', "kraken")
+        self.asset_info = None
+        self.last_asset_list = []
     
     def __del__(self):
-        pass
+        self.__disconnect()
     
     def __connect(self):
-        pass
+        self.__disconnect()
+        self.log.info("Connecting to Kraken...")
+        self.conn = krakenex.Connection()
+        self.interface = krakenex.API(self.api_key, self.private_key, self.conn)
        
     def __disconnect(self):
-        pass  
+        if self.interface is not None and self.conn is not None:
+            self.log.debug("Closing connection to kraken")
+            self.conn.close()
     
     """
     Returns the current time on the Exchange Server
     """
     def getExchangeServerTime(self):
-        pass
+        try:
+            data = self.interface.query_public("Time")
+            if (len(data['error']) == 0):
+                return float(data['result']['unixtime']) / 1000.0
+            else:
+                self.log.error("An error was encountered retrieving the server time: "+str(data['error']))
+        except Exception as e:
+            self.log.error("Failed to retrieve server time.  Reason: "+str(e))
+            self.log.debug(traceback.format_exc())
+            self.__connect()
+        return time.time()
     
     """
     Returns the current account balance of the user
     """
     def getAccountBalance(self):
-        pass
+        assetList = []
+        try:
+            data = self.interface.query_private("Balance")
+            if (len(data['error']) == 0):
+                if data['result'] is not None:
+                    for asset in data['result']:
+                        if asset not in self.ignore_list:
+                            try:
+                                assetList.append(AssetInfo(asset, float(data['result'][asset])))
+                            except Exception as e:
+                                self.log.error("Failed to retrieve account balance for "+str(asset))
+                                self.log.debug(traceback.format_exc())
+            else:
+                self.log.error("An error was encountered accessing account: "+str(data['error']))
+        except Exception as e:
+            self.log.error("Failed to retrieve account balance. Reason: "+str(e))
+            self.log.debug(traceback.format_exc())
+            self.__connect()
+        return assetList
     
     """
     Returns exchange data about the given asset pairs
     """
     def getAssetInfo(self, asset_list):
-        pass
+        if self.asset_info is None or self.last_asset_list is not asset_list:
+            data = None
+            assetList = []
+            all_good = True
+            #get data
+            while data is None:
+                try:
+                    assetPairs=""
+                    for asset in assetList:
+                        assetPairs+=asset+","
+                    assetPairs = assetPairs[:-1]
+                    data = self.interface.query_public("AssetPairs", {"pair":assetPairs})
+                except Exception as e:
+                    self.log.error("Failed to retrieve asset info. Reason: "+str(e))
+                    self.log.debug(traceback.format_exc())
+                    self.__connect()
+                    all_good = False
+            #Format data
+            if data is not None and (len(data['error']) == 0):
+                if data['result'] is not None:
+                    for ticker in data['result']:
+                        try:
+                            assetList.append(TickerInfo(self.exchange_name, ticker['base'], ticker['quote'], order_precision=ticker['pair_decimals']))
+                        except Exception as e:
+                            self.log.error("Failed to process asset info for "+str(asset))
+                            self.log.debug(traceback.format_exc())
+                            all_good = False
+            else:
+                self.log.error("An error was encountered retrieving asset info: "+str(data['error']))
+            if all_good:
+                self.asset_info = assetList
+            return assetList
+        else:
+            return self.asset_info
     
     """
     Returns price data about the given asset pairs
     """
     def pollAssetPrices(self, asset_list):
-        pass
+        data = None
+        assetList = []
+        #get ticker data
+        ticker_info = self.getAssetInfo(asset_list)
+        pairs = {}
+        for ticker in ticker_info:
+            pairs[ticker.base+ticker.quote] = [ticker.base, ticker.quote]
+        #get price data
+        while data is None:
+            try:
+                assetPairs=""
+                for asset in assetList:
+                    assetPairs+=asset+","
+                assetPairs = assetPairs[:-1]
+                data = self.interface.query_public("AssetPairs", {"pair":assetPairs})
+                if (len(data['error']) == 0):
+                    return data['result']
+                else:
+                    self.log.error("An error was encountered retrieving asset info: "+str(data['error']))
+                    return []   
+            except Exception as e:
+                self.log.error("Failed to retrieve asset info. Reason: "+str(e))
+                self.log.debug(traceback.format_exc())
+                self.__connect()
+        #Format data
+        if (len(data['error']) == 0):
+            if data['result'] is not None:
+                for ticker in data['result']:
+                    try:
+                        base, quote = pairs[asset['pair_name']]
+                        assetList.append(TickerData(self.exchange_name, base, quote, 
+                                                    ticker['a'][0], ticker['a'][1], 
+                                                    ticker['b'][0], ticker['b'][1]))
+                    except Exception as e:
+                        self.log.error("Failed to process asset info for "+str(asset))
+                        self.log.debug(traceback.format_exc())
+        else:
+            self.log.error("An error was encountered retrieving asset info: "+str(data['error']))
+        return assetList
     
     """
     Submit a list of orders to the exchange

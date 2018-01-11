@@ -8,17 +8,15 @@
 import sys
 sys.path.append("..")
 
-import events
 import logger
 
-import numpy as np
 import traceback
 
 
 class ArbitrageMonitor:
     
     def __init__(self, config, **kwargs):
-        self.log = logger.Logger("kutulu", "ArbitrageMonitor", "DEBUG")
+        self.log = logger.Logger("engine", "ArbitrageMonitor", "DEBUG")
         self.log.debug("Initializing ArbitrageMonitor")
         self.network_fee = config.get("network_fee")
         self.exchange_fee = config.get("exchange_fee")
