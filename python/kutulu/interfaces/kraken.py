@@ -160,7 +160,7 @@ class KrakenAPI(ExchangeAPIWrapper):
                     try:
                         base, quote = pairs[asset['pair_name']]
                         assetList.append(TickerData(self.exchange_name, base, quote, 
-                                                    ticker['a'][0], ticker['a'][1], 
+                                                    ticker['a'][0], ticker['a'][1],
                                                     ticker['b'][0], ticker['b'][1]))
                     except Exception as e:
                         self.log.error("Failed to process asset info for "+str(asset))
@@ -173,7 +173,51 @@ class KrakenAPI(ExchangeAPIWrapper):
     Submit a list of orders to the exchange
     """
     def submitOrders(self, orders):
-        pass
+        resultList = []
+        for order in orderList:
+            try:
+                if self.testmode:                    
+                    order.success = True
+                    resultList.append((order, {"txid":"testing"}))
+                elif isinstance(order, Order) and (order.exchange == self.exchange_name):
+                    data = self.interface.query_private("AddOrder",self.__formatOrder(order))
+                    if (len(data['error']) == 0):
+                        order.success = True
+                        resultList.append((order, data['result']))
+                    elif data['error'] == "The read operation timed out":   
+                        #These may still be accepted by Kraken, but until
+                        # we have a good way of handling them, just ignore them
+                        # and re-sync the account records later
+                        order.success = False
+                        resultList.append((order, data['error']))
+                    else:
+                        order.success = False
+                        resultList.append((order, data['error']))
+                else:
+                    order.success = False
+                    resultList.append((order, {'error':"no data"}))
+            except Exception as e:
+                self.log.error("Failed to submit order of type "+str(type(order))+". Reason: "+str(e))
+                self.log.debug(traceback.format_exc())
+                self.__connect()
+                order.success = False
+                resultList.append((order, {'error':str(e)}))
+        return resultList
+        
+    def __formatOrder(self, order):        
+        if order.base is not None and order.quote is not None and order.action is not None \
+            and order.price is not None and (order.volume > 0):
+            order = {"pair":order.base+order.quote,
+                     "type":order.action,
+                     "ordertype":order.ordertype,
+                     "price":order.price,
+                     "volume":float(("{0:0."+str(order.precision)+"f}").format(order.volume)),
+                     "oflags":order.feeFlag,
+                     "expiretm":order.expiretime,
+                     "userref":order.orderId}
+            return order
+        else:
+            return dict()
     
     """
     Returns a list of closed orders placed by the user
